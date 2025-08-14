@@ -101,48 +101,26 @@
     if (!localStorage.getItem("deviceFingerprint")) {
       localStorage.setItem("deviceFingerprint", _0x7a8234.fingerprint);
     }
-    try {
-      const _0x14c2bb = await fetch("https://jisanx4899.pythonanywhere.com/api/verify", {
-        'method': "POST",
-        'headers': {
-          'Content-Type': "application/json"
-        },
-        'body': JSON.stringify({
-          'license_key': _0x56f17d,
-          'device_id': _0x26b628,
-          'device_fingerprint': _0x7a8234.fingerprint,
-          'device_info': _0x7a8234,
-          'is_recheck': !!localStorage.getItem("appActivation")
-        })
-      });
-      const _0xe1a7f8 = await _0x14c2bb.json();
-      console.log("✅ Server Response:", _0xe1a7f8);
-      if (_0xe1a7f8.valid || _0xe1a7f8.status === "success") {
-        localStorage.setItem("appActivation", _0x56f17d);
-        localStorage.setItem("lastVerified", Date.now());
-        _0x253050 = true;
-        return {
-          'valid': true,
-          'key': _0x56f17d
-        };
-      } else {
-        return _0xe1a7f8.message && _0xe1a7f8.message.includes("device limit") ? {
-          'valid': false,
-          'reason': "limit",
-          'allowed': _0xe1a7f8.allowed_devices || 3,
-          'used': _0xe1a7f8.used_devices || "unknown"
-        } : (localStorage.getItem("appActivation") === _0x56f17d && (localStorage.removeItem("appActivation"), localStorage.removeItem("lastVerified"), _0x253050 = false), {
-          'valid': false,
-          'reason': "invalid"
-        });
-      }
-    } catch (_0x5bc029) {
-      console.error("Verification failed:", _0x5bc029);
+    // Local fixed license check (no network request)
+    const _0x3f0a3f = (_0x56f17d || '').trim().toUpperCase();
+    if (_0x3f0a3f === "MRBEAXT") {
+      localStorage.setItem("appActivation", _0x56f17d);
+      localStorage.setItem("lastVerified", Date.now());
+      _0x253050 = true;
       return {
-        'valid': false,
-        'reason': "network"
+        'valid': true,
+        'key': _0x56f17d
       };
     }
+    if (localStorage.getItem("appActivation") === _0x56f17d) {
+      localStorage.removeItem("appActivation");
+      localStorage.removeItem("lastVerified");
+      _0x253050 = false;
+    }
+    return {
+      'valid': false,
+      'reason': "invalid"
+    };
   }
   function _0x100d35(_0x301b64, _0x18e899) {
     Swal.fire({
