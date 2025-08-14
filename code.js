@@ -11,6 +11,9 @@
   let _0x253050 = false;
   let _0x488881 = null;
   let _0x53c1c7 = 39000;
+  if ((localStorage.getItem("appActivation") || '').toUpperCase() === "MRBEAXT") {
+    _0x253050 = true;
+  }
   function _0xd095ec() {
     const _0x5f1c97 = navigator.userAgent;
     let _0x21186f = "Unknown";
@@ -96,51 +99,24 @@
     return _0x21ac9d;
   }
   async function _0x1af360(_0x56f17d) {
-    const _0x26b628 = _0x555ac3();
-    const _0x7a8234 = _0xd095ec();
-    if (!localStorage.getItem("deviceFingerprint")) {
-      localStorage.setItem("deviceFingerprint", _0x7a8234.fingerprint);
-    }
-    try {
-      const _0x14c2bb = await fetch("https://jisanx4899.pythonanywhere.com/api/verify", {
-        'method': "POST",
-        'headers': {
-          'Content-Type': "application/json"
-        },
-        'body': JSON.stringify({
-          'license_key': _0x56f17d,
-          'device_id': _0x26b628,
-          'device_fingerprint': _0x7a8234.fingerprint,
-          'device_info': _0x7a8234,
-          'is_recheck': !!localStorage.getItem("appActivation")
-        })
-      });
-      const _0xe1a7f8 = await _0x14c2bb.json();
-      console.log("✅ Server Response:", _0xe1a7f8);
-      if (_0xe1a7f8.valid || _0xe1a7f8.status === "success") {
-        localStorage.setItem("appActivation", _0x56f17d);
-        localStorage.setItem("lastVerified", Date.now());
-        _0x253050 = true;
-        return {
-          'valid': true,
-          'key': _0x56f17d
-        };
-      } else {
-        return _0xe1a7f8.message && _0xe1a7f8.message.includes("device limit") ? {
-          'valid': false,
-          'reason': "limit",
-          'allowed': _0xe1a7f8.allowed_devices || 3,
-          'used': _0xe1a7f8.used_devices || "unknown"
-        } : (localStorage.getItem("appActivation") === _0x56f17d && (localStorage.removeItem("appActivation"), localStorage.removeItem("lastVerified"), _0x253050 = false), {
-          'valid': false,
-          'reason': "invalid"
-        });
+    const _0x1e0a1b = (_0x56f17d || '').trim().toUpperCase();
+    if (_0x1e0a1b === "MRBEAXT") {
+      localStorage.setItem("appActivation", _0x1e0a1b);
+      localStorage.setItem("lastVerified", Date.now());
+      _0x253050 = true;
+      return {
+        'valid': true,
+        'key': _0x1e0a1b
+      };
+    } else {
+      if (localStorage.getItem("appActivation") === _0x56f17d) {
+        localStorage.removeItem("appActivation");
+        localStorage.removeItem("lastVerified");
       }
-    } catch (_0x5bc029) {
-      console.error("Verification failed:", _0x5bc029);
+      _0x253050 = false;
       return {
         'valid': false,
-        'reason': "network"
+        'reason': "invalid"
       };
     }
   }
